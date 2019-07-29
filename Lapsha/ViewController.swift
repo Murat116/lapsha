@@ -61,33 +61,78 @@ class ViewController: UIViewController {
             return arrayWIthEvents
         }
         
-        func addIndexInGroup(index: Int, arrayWIthEvents: [[String : Int]],arrayForOverloppingevents: [Int], widht : Int) -> (widht : Int, arrayForOverloppingevents : [Int]){
+        func addIndexInGroup (arrayForOverloppingevents: [Int], array: [[String : Int]], index: Int) -> [Int]{
             
-            var overlopEvents = arrayForOverloppingevents
-            var elementsINLineCount = widht
-            var indexOfMax = 0
+            var list = arrayForOverloppingevents
+            var indexMin = list.startIndex
+            var indexMax = list.endIndex-1
+            var oldindexMid = 0
             
-            while
-                ( arrayWIthEvents[arrayForOverloppingevents[indexOfMax]]["end"]! - arrayWIthEvents[arrayForOverloppingevents[indexOfMax]]["start"]! ) > arrayWIthEvents[index]["end"]! - arrayWIthEvents[index]["start"]!{
-                    
-                    indexOfMax += 1
-                    
-                    if indexOfMax == arrayForOverloppingevents.count{
-                        break
-                    }
-            }
+            let value = array[index]["end"]! - array[index]["start"]!
             
-            overlopEvents.insert(index, at: indexOfMax)
-            /*
-            if (indexOfMax != 0 && arrayWIthEvents[arrayForOverloppingevents[indexOfMax]]["start"]! > arrayWIthEvents[arrayForOverloppingevents[indexOfMax - 1]]["end"]!) || (indexOfMax + 1 < arrayForOverloppingevents.count && arrayWIthEvents[arrayForOverloppingevents[indexOfMax]]["start"]! >  arrayWIthEvents[arrayForOverloppingevents[indexOfMax + 1]]["end"]!) {
-                elementsINLineCount -= 1
+            while indexMin <= indexMax{
                 
+                let indexMid = indexMin + (indexMax - indexMin)/2
+                
+                if indexMid == 0 || indexMid == oldindexMid{
+                    var indexOfMax = indexMid
+                    
+                    while
+                        ( array[list[indexOfMax]]["end"]! - array[list[indexOfMax]]["start"]! ) > value {
+                            
+                            indexOfMax += 1
+                            
+                            if indexOfMax == list.count{
+                                
+                                break
+                            }
+                    }
+                    
+                    list.insert(index, at: indexOfMax)
+                    return list
+                }
+                
+                
+                print(indexMid)
+                guard let begin = array[list[indexMid]]["start"] else {
+                    return list
+                }
+                
+                guard let end = array[list[indexMid]]["end"] else {
+                    return list
+                }
+                
+                guard let beginOfnext = array[list[indexMid + 1]]["start"] else {
+                    return list
+                }
+                
+                guard let endOfNext = array[list[indexMid + 1]]["end"] else {
+                    return list
+                }
+                let lengthOfNext = endOfNext -  beginOfnext
+                
+                let length = end - begin
+                
+                if length >= value && value >= lengthOfNext{
+                    list.insert(index, at: indexMid + 1)
+                    return list
+                }
+                
+                if value < length{
+                    
+                    indexMin = indexMid
+                    
+                }
+                else{
+                    
+                    indexMax = indexMid
+                    
+                }
+                oldindexMid = indexMid
             }
-            
-            elementsINLineCount += 1
-            */
-            return (elementsINLineCount, overlopEvents)
-            
+            //}
+            print("return nil")
+            return list
         }
         
         func createFrameOfEvent(arrayWityBegin: [[String: Int]] ) -> [[String: Int]]{
@@ -111,8 +156,7 @@ class ViewController: UIViewController {
                 
                 if startIndex + 1 == arrayWIthEvents.count && arrayForOverloppingevents.count != 0{
                     if arrayWIthEvents[i]["start"]! < arrayWIthEvents[i - 1]["end"]!{
-                        
-                        arrayForOverloppingevents = addIndexInGroup(index: i, arrayWIthEvents: arrayWIthEvents, arrayForOverloppingevents: arrayForOverloppingevents, widht: widht).arrayForOverloppingevents
+                        arrayForOverloppingevents = addIndexInGroup(arrayForOverloppingevents: arrayForOverloppingevents, array: arrayWIthEvents, index: i)
                         
                         if (indexOfMax != 0 && arrayWIthEvents[arrayForOverloppingevents[indexOfMax]]["start"]! > arrayWIthEvents[arrayForOverloppingevents[indexOfMax - 1]]["end"]!) || (indexOfMax + 1 < arrayForOverloppingevents.count && arrayWIthEvents[arrayForOverloppingevents[indexOfMax]]["start"]! >  arrayWIthEvents[arrayForOverloppingevents[indexOfMax + 1]]["end"]!) {
                             widht -= 1
@@ -156,7 +200,7 @@ class ViewController: UIViewController {
                     
                     if arrayForOverloppingevents.count != 0 && arrayWIthEvents[oldMaxHeightIndex]["end"]! > arrayWIthEvents[i]["start"]!{
                         
-                        arrayForOverloppingevents = addIndexInGroup(index: i, arrayWIthEvents: arrayWIthEvents, arrayForOverloppingevents: arrayForOverloppingevents, widht: widht).arrayForOverloppingevents
+                        arrayForOverloppingevents = addIndexInGroup(arrayForOverloppingevents: arrayForOverloppingevents, array: arrayWIthEvents, index: i)
                         
                         if (indexOfMax != 0 && arrayWIthEvents[arrayForOverloppingevents[indexOfMax]]["start"]! > arrayWIthEvents[arrayForOverloppingevents[indexOfMax - 1]]["end"]!) || (indexOfMax + 1 < arrayForOverloppingevents.count && arrayWIthEvents[arrayForOverloppingevents[indexOfMax]]["start"]! >  arrayWIthEvents[arrayForOverloppingevents[indexOfMax + 1]]["end"]!) {
                             widht -= 1
@@ -207,7 +251,7 @@ class ViewController: UIViewController {
                 } else if lastEventInGroup + 1 == i && arrayForOverloppingevents.count != 0 {
                     print("error")
                     
-                    arrayForOverloppingevents = addIndexInGroup(index: i, arrayWIthEvents: arrayWIthEvents, arrayForOverloppingevents: arrayForOverloppingevents, widht: widht).arrayForOverloppingevents
+                    arrayForOverloppingevents = addIndexInGroup(arrayForOverloppingevents: arrayForOverloppingevents, array: arrayWIthEvents, index: i)
                     
                     if (indexOfMax != 0 && arrayWIthEvents[arrayForOverloppingevents[indexOfMax]]["start"]! > arrayWIthEvents[arrayForOverloppingevents[indexOfMax - 1]]["end"]!) || (indexOfMax + 1 < arrayForOverloppingevents.count && arrayWIthEvents[arrayForOverloppingevents[indexOfMax]]["start"]! >  arrayWIthEvents[arrayForOverloppingevents[indexOfMax + 1]]["end"]!) {
                         widht -= 1
