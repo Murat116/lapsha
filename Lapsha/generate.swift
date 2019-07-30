@@ -16,10 +16,11 @@ class generate: UIViewController {
         // Do any additional setup after loading the view.
     }
     
+    //button for generate some events 
     @IBAction func generate(_ sender: UIButton) {
         for i in 3300...3460{
              //if i%2 == 0{
-            array.append(["start": i, "end" : i + 1])
+            array.append(["start": i - 10, "end" : i + 10])
             //}
         }
         print(array.last,"next")
