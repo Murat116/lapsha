@@ -25,7 +25,7 @@ var array: Array =
         ["start": 130, "end" : 710], //5 + 580
         ["start": 300, "end" : 399 ],
         //["start": 300, "end" : 399 ],
-         ["start": 309, "end" : 399 ],
+         //["start": 330, "end" : 420 ],
         ["start": 309, "end" : 399 ],
         ["start": 309, "end" : 349 ],
         ["start": 351, "end" : 437 ],

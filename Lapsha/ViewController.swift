@@ -160,12 +160,22 @@ class ViewController: UIViewController {
                 //возможное решение выявленна закономерность что если end < start" тогда можно что-то увеличивать
             }
 
+            //это сделанно оцень плохо думать как оптимизировать забирает 1/2 времени от времени выполнения всей функции
             for j in firstIndex...(elementsCount + firstIndex){
                 if let x = arrayWIthEvents[j]["x"],
                     let wight = arrayWIthEvents[j]["wight"],
                     let xOfNext = arrayWIthEvents[j - 1]["x"],
-                        x + wight < xOfNext{
-                    arrayWIthEvents[j]["wight"] = xOfNext - weightForAllElements
+                        x + wight < xOfNext, j != groupEventArr[0]{
+                    var y = j - 1
+                    while let xY = arrayWIthEvents[y]["x"], x <= xY {
+                        if let xStart = arrayWIthEvents[j]["start"],
+                            let xYEnd = arrayWIthEvents[y]["end"],
+                            xStart <= xYEnd {
+                            print(y,"y")
+                                arrayWIthEvents[j]["wight"] = xY - x
+                        }
+                        y -= 1
+                    }
                 }
             }
             
