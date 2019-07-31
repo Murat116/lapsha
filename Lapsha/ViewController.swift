@@ -85,65 +85,71 @@ class ViewController: UIViewController {
             arrayWIthEvents[OverlopEnentArr[0]]["x"] = 0
             arrayWIthEvents[OverlopEnentArr[0]]["wight"] = weightForAllElements
             
+           
+            
             //create coordinates for others event
             for i in 1..<OverlopEnentArr.count{
-            
+                
                 guard let xOfLastEvent = arrayWIthEvents[OverlopEnentArr[i - 1]]["x"] else{
                     return arrayWIthEvents
                 }
                 
                 //если конец нынешнего события больше начала прошлого значит они идут друг за другом, обратное утврждение означает что они идут друг под другом(в одном столбце) в соотвествии с этим задаем коорлинаты
                 if let end = arrayWIthEvents[OverlopEnentArr[i]]["end"], let startLast = arrayWIthEvents[OverlopEnentArr[i - 1]]["start"], end > startLast{
-             
-                   print(OverlopEnentArr[i],"end > start")
                     
-                   
-                   var remomeAt = i - 1
-                    while let start = arrayWIthEvents[OverlopEnentArr[i]]["start"],let endLast = arrayWIthEvents[OverlopEnentArr[remomeAt]]["end"], startLast >= endLast{
-                        remomeAt -= 1
+                     //print(OverlopEnentArr[i],"end > start")
+                    
+                    if let xOfBefore = arrayWIthEvents[OverlopEnentArr[i] - 1]["x"], let start = arrayWIthEvents[OverlopEnentArr[i]]["start"], let endOfLast = arrayWIthEvents[OverlopEnentArr[i ] - 1]["end"], arrayWIthEvents[OverlopEnentArr[i]]["x"] != xOfBefore, start > endOfLast{
+                        print(OverlopEnentArr[i], start,endOfLast)
+                        arrayWIthEvents[OverlopEnentArr[i]]["x"] = xOfBefore
+                    } else {
+                
+                        arrayWIthEvents[OverlopEnentArr[i]]["x"] = xOfLastEvent + weightForAllElements
                     }
-                    print(OverlopEnentArr[remomeAt],OverlopEnentArr[i],"index")
-                    
-                    guard let xOfDesiredEvent = arrayWIthEvents[OverlopEnentArr[remomeAt]]["x"] else{
-                        return arrayWIthEvents
-                    }
-                    
-                    arrayWIthEvents[OverlopEnentArr[i]]["x"] = xOfDesiredEvent + weightForAllElements
-                    print(OverlopEnentArr[i],arrayWIthEvents[OverlopEnentArr[i]]["x"] )
                     arrayWIthEvents[OverlopEnentArr[i]]["wight"] = weightForAllElements
                     //
                 } else {
                     print(OverlopEnentArr[i],"end < start")
-                
-                    var index = i - 1
                     
-                    while let end = arrayWIthEvents[OverlopEnentArr[i]]["end"], let startLast = arrayWIthEvents[OverlopEnentArr[index]]["start"], end <= startLast{
-                        index -= 1
+                    if arrayWIthEvents[OverlopEnentArr[i] - 1]["x"] != nil//, arrayWIthEvents[OverlopEnentArr[i]]["x"] != xOfBefore
+                        {
+                        var index = i - 1
+                        print(OverlopEnentArr[i], "я ищу тебя")
+                        while let end = arrayWIthEvents[OverlopEnentArr[i]]["end"], let startLast = arrayWIthEvents[OverlopEnentArr[index]]["start"], end <= startLast{
+                            index -= 1
+                        }
+                        
+                        
+                        guard let xOfDesiredEvent = arrayWIthEvents[OverlopEnentArr[index]]["x"] else{
+                            return arrayWIthEvents
+                        }
+                        
+                        arrayWIthEvents[OverlopEnentArr[i]]["x"] = xOfDesiredEvent + weightForAllElements
+                            if let xOfBefore = arrayWIthEvents[OverlopEnentArr[i] - 1]["x"], arrayWIthEvents[OverlopEnentArr[i]]["x"] == xOfBefore{
+                                arrayWIthEvents[OverlopEnentArr[i]]["x"] = xOfBefore + weightForAllElements
+                                arrayWIthEvents[OverlopEnentArr[i]]["foundation"] = 1
+                                print(OverlopEnentArr[i], "искомые")
+                            }
+
+                            
+                    } else {
+                        arrayWIthEvents[OverlopEnentArr[i]]["x"] = xOfLastEvent
+                        
+                        if arrayWIthEvents[OverlopEnentArr[i - 1]]["foundation"] != nil {
+                            arrayWIthEvents[OverlopEnentArr[i]]["x"] = arrayWIthEvents[OverlopEnentArr[i - 1] - 1]["x"]
+                        }
+                        
                     }
-                     print(OverlopEnentArr[index],OverlopEnentArr[i],"index")
-                    
-                    guard let xOfDesiredEvent = arrayWIthEvents[OverlopEnentArr[index]]["x"] else{
-                        return arrayWIthEvents
-                    }
-                    
-                    arrayWIthEvents[OverlopEnentArr[i]]["x"] = xOfDesiredEvent + weightForAllElements
                     
                     arrayWIthEvents[OverlopEnentArr[i]]["wight"] = weightForAllElements
                 }
                 
+                
+                
                 //решение проблемы с увеличение ширины некоторые вьюх
                 //проблмеа решенна в лоб, TODO: переделать или доработать
                 //TODO: добавить проверку по енду и бегин некст
-                
-                
-                
-                if arrayWIthEvents[OverlopEnentArr[i]]["overlop"] != nil , let xlast = arrayWIthEvents[OverlopEnentArr[i] - 1]["x"], let x = arrayWIthEvents[OverlopEnentArr[i]]["x"], xlast + weightForAllElements != x{
-                    
-                   //arrayWIthEvents[OverlopEnentArr[i]]["x"] = arrayWIthEvents[OverlopEnentArr[i] + 1]["x"]
-                    
-                    print(OverlopEnentArr[i],"растягивай")
-                }
-                
+                //возможное решение выявленна закономерность что если end < start" тогда можно что-то увеличивать
             }
             
         }

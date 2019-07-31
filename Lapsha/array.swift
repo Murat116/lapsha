@@ -17,15 +17,18 @@ var array: Array =
         ["start": 100, "end" : 150 ], //2 +
         //["start": 100, "end" : 150 ],
         //["start": 100, "end" : 150 ],
-        ["start": 100, "end" : 150 ],
          //6
         ["start": 105, "end" : 750], //3 + 645
-        ["start": 110, "end" : 150],
-        ["start": 110, "end" : 150],//4 +
+        ["start": 110, "end" : 160 ],
+        ["start": 120, "end" : 160],
+        ["start": 130, "end" : 170],//4 +
         ["start": 130, "end" : 710], //5 + 580
         ["start": 300, "end" : 399 ],
+        //["start": 300, "end" : 399 ],
+         ["start": 309, "end" : 399 ],
+        ["start": 309, "end" : 399 ],
         ["start": 309, "end" : 349 ],
-        ["start": 351, "end" : 399 ],
+        ["start": 351, "end" : 401 ],
         ["start": 400, "end" : 600 ],//6 +
         ["start": 610, "end" : 650 ],  //7 40
         ["start" : 700, "end" : 1200], //8 + 500
