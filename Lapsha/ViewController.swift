@@ -73,83 +73,100 @@ class ViewController: UIViewController {
     @IBOutlet weak var kek: UILabel!
     
     //func which create Frame For All overlooping Event
-    func getFrameOfEvents(OverlopEnentArr : [Int], arrayWIthBegin: [[String : Int]], widht: Int) -> [[String:Int]]{
+    func getFrameOfEvents(groupEventArr : [Int], arrayWIthBegin: [[String : Int]], widht: Int, firstIndex: Int) -> [[String:Int]]{
         var arrayWIthEvents = arrayWIthBegin
         var countOfEvent = 0 // на сколько нужно увеличить ширину некоторых событий
-        print(OverlopEnentArr)
+        let elementsCount = groupEventArr.count - 1
         //if array with overlopping events dosen't empty we can crete coordinatis for it
-        if OverlopEnentArr.count != 0{
+        if groupEventArr.count != 0{
             let weightForAllElements = Int(UIScreen.main.bounds.width) / widht //по-моему вот тут!
             
             //create coordinates for first event in froup bcs we know x and width
-            arrayWIthEvents[OverlopEnentArr[0]]["x"] = 0
-            arrayWIthEvents[OverlopEnentArr[0]]["wight"] = weightForAllElements
+            arrayWIthEvents[groupEventArr[0]]["x"] = 0
+            arrayWIthEvents[groupEventArr[0]]["wight"] = weightForAllElements
             
-           
+           print(groupEventArr)
             
             //create coordinates for others event
-            for i in 1..<OverlopEnentArr.count{
+            for i in 1..<elementsCount + 1{
                 
-                guard let xOfLastEvent = arrayWIthEvents[OverlopEnentArr[i - 1]]["x"] else{
+                guard let xOfLastEvent = arrayWIthEvents[groupEventArr[i - 1]]["x"] else{
                     return arrayWIthEvents
                 }
                 
                 //если конец нынешнего события больше начала прошлого значит они идут друг за другом, обратное утврждение означает что они идут друг под другом(в одном столбце) в соотвествии с этим задаем коорлинаты
-                if let end = arrayWIthEvents[OverlopEnentArr[i]]["end"], let startLast = arrayWIthEvents[OverlopEnentArr[i - 1]]["start"], end > startLast{
+                if let end = arrayWIthEvents[groupEventArr[i]]["end"], let startLast = arrayWIthEvents[groupEventArr[i - 1]]["start"], end > startLast{
                     
-                     //print(OverlopEnentArr[i],"end > start")
-                    
-                    if let xOfBefore = arrayWIthEvents[OverlopEnentArr[i] - 1]["x"], let start = arrayWIthEvents[OverlopEnentArr[i]]["start"], let endOfLast = arrayWIthEvents[OverlopEnentArr[i ] - 1]["end"], arrayWIthEvents[OverlopEnentArr[i]]["x"] != xOfBefore, start > endOfLast{
-                        print(OverlopEnentArr[i], start,endOfLast)
-                        arrayWIthEvents[OverlopEnentArr[i]]["x"] = xOfBefore
+                    if let xOfBefore = arrayWIthEvents[groupEventArr[i] - 1]["x"], let start = arrayWIthEvents[groupEventArr[i]]["start"], let endOfLast = arrayWIthEvents[groupEventArr[i ] - 1]["end"], arrayWIthEvents[groupEventArr[i]]["x"] != xOfBefore, start > endOfLast{
+                        print(groupEventArr[i], start,endOfLast)
+                        arrayWIthEvents[groupEventArr[i]]["x"] = xOfBefore
                     } else {
                 
-                        arrayWIthEvents[OverlopEnentArr[i]]["x"] = xOfLastEvent + weightForAllElements
+                        arrayWIthEvents[groupEventArr[i]]["x"] = xOfLastEvent + weightForAllElements
                     }
-                    arrayWIthEvents[OverlopEnentArr[i]]["wight"] = weightForAllElements
+
+                    arrayWIthEvents[groupEventArr[i]]["wight"] = weightForAllElements
                     //
                 } else {
-                    print(OverlopEnentArr[i],"end < start")
+                    print(groupEventArr[i],"end < start")
                     
-                    if arrayWIthEvents[OverlopEnentArr[i] - 1]["x"] != nil//, arrayWIthEvents[OverlopEnentArr[i]]["x"] != xOfBefore
+                    if arrayWIthEvents[groupEventArr[i] - 1]["x"] != nil//, arrayWIthEvents[groupEventArr[i]]["x"] != xOfBefore
                         {
                         var index = i - 1
-                        print(OverlopEnentArr[i], "я ищу тебя")
-                        while let end = arrayWIthEvents[OverlopEnentArr[i]]["end"], let startLast = arrayWIthEvents[OverlopEnentArr[index]]["start"], end <= startLast{
+                        print(groupEventArr[i], "я ищу тебя")
+                        while let end = arrayWIthEvents[groupEventArr[i]]["end"], let startLast = arrayWIthEvents[groupEventArr[index]]["start"], end <= startLast{
                             index -= 1
                         }
                         
                         
-                        guard let xOfDesiredEvent = arrayWIthEvents[OverlopEnentArr[index]]["x"] else{
+                        guard let xOfDesiredEvent = arrayWIthEvents[groupEventArr[index]]["x"] else{
                             return arrayWIthEvents
                         }
                         
-                        arrayWIthEvents[OverlopEnentArr[i]]["x"] = xOfDesiredEvent + weightForAllElements
-                            if let xOfBefore = arrayWIthEvents[OverlopEnentArr[i] - 1]["x"], arrayWIthEvents[OverlopEnentArr[i]]["x"] == xOfBefore{
-                                arrayWIthEvents[OverlopEnentArr[i]]["x"] = xOfBefore + weightForAllElements
-                                arrayWIthEvents[OverlopEnentArr[i]]["foundation"] = 1
-                                print(OverlopEnentArr[i], "искомые")
+                        arrayWIthEvents[groupEventArr[i]]["x"] = xOfDesiredEvent + weightForAllElements
+                            if let xOfBefore = arrayWIthEvents[groupEventArr[i] - 1]["x"], arrayWIthEvents[groupEventArr[i]]["x"] == xOfBefore{
+                                arrayWIthEvents[groupEventArr[i]]["x"] = xOfBefore + weightForAllElements
+                                arrayWIthEvents[groupEventArr[i]]["foundation"] = 1
+                                print(groupEventArr[i], "искомые")
                             }
 
                             
                     } else {
-                        arrayWIthEvents[OverlopEnentArr[i]]["x"] = xOfLastEvent
+                        arrayWIthEvents[groupEventArr[i]]["x"] = xOfLastEvent
                         
-                        if arrayWIthEvents[OverlopEnentArr[i - 1]]["foundation"] != nil {
-                            arrayWIthEvents[OverlopEnentArr[i]]["x"] = arrayWIthEvents[OverlopEnentArr[i - 1] - 1]["x"]
+                        if arrayWIthEvents[groupEventArr[i - 1]]["foundation"] != nil {
+                            arrayWIthEvents[groupEventArr[i]]["x"] = arrayWIthEvents[groupEventArr[i - 1] - 1]["x"]
                         }
                         
                     }
                     
-                    arrayWIthEvents[OverlopEnentArr[i]]["wight"] = weightForAllElements
+                    arrayWIthEvents[groupEventArr[i]]["wight"] = weightForAllElements
                 }
                 
-                
-                
+                print(groupEventArr[i],"что не вошло")
+                if  groupEventArr[i] + 1 < arrayWIthEvents.count - 1,
+                    let begin =  arrayWIthEvents[groupEventArr[i]]["start"],
+                    let endOfBefore = arrayWIthEvents[groupEventArr[i] - 1]["end"],
+                    let end = arrayWIthEvents[groupEventArr[i]]["end"],
+                    let beginOfNext = arrayWIthEvents[groupEventArr[i] + 1]["start"],
+                    (begin >= endOfBefore && end <= beginOfNext) || groupEventArr[i] == elementsCount + firstIndex{
+
+                    arrayWIthEvents[groupEventArr[i]]["wight"] = Int(UIScreen.main.bounds.width) - arrayWIthEvents[groupEventArr[i]]["x"]!
+
+                }
                 //решение проблемы с увеличение ширины некоторые вьюх
                 //проблмеа решенна в лоб, TODO: переделать или доработать
                 //TODO: добавить проверку по енду и бегин некст
                 //возможное решение выявленна закономерность что если end < start" тогда можно что-то увеличивать
+            }
+
+            for j in firstIndex...(elementsCount + firstIndex){
+                if let x = arrayWIthEvents[j]["x"],
+                    let wight = arrayWIthEvents[j]["wight"],
+                    let xOfNext = arrayWIthEvents[j - 1]["x"],
+                        x + wight < xOfNext{
+                    arrayWIthEvents[j]["wight"] = xOfNext - weightForAllElements
+                }
             }
             
         }
@@ -157,9 +174,9 @@ class ViewController: UIViewController {
     }
     
     //func which add index of overlopping event from array with all events to array with index from group
-    func addIndexInGroup (OverlopEnentArr: [Int], array: [[String : Int]], index: Int) -> [Int]{
+    func addIndexInGroup (groupEventArr: [Int], array: [[String : Int]], index: Int) -> [Int]{
         
-        var list = OverlopEnentArr
+        var list = groupEventArr
         var indexMin = list.startIndex
         var indexMax = list.endIndex-1
         var oldindexMid = 0
@@ -246,32 +263,34 @@ class ViewController: UIViewController {
         
         
         
-        var OverlopEnentArr = [Int]()
+        var groupEventArr = [Int]()
         var oldMaxHeightIndex = 0
         var maxHeightIndex = 0 //index for the most height event
         var widht: Int = 0 //variable for counting overlloping ; this varuable is used for calculations the wight for everi event in overrlopingEvent
         var lastEventInGroup = 0
         var arrayWIthEvents = arrayWityBegin
-        
+        var maxHeight = 0 //height of tallest event in overloppingEvent
+        var firstIndex = 0 //храним индекс первого событий группы
+
         func oneCount(i: Int = 0) -> (Int) {
             
-            var maxHeight = 0 //height of tallest event in overloppingEvent
+
             
             var indexOfMax = 0
             
             //если это последний элемент и массив с группами еше не пустой значит последнее событий ввходит в группу =>
-            if i + 1 == arrayWIthEvents.count && OverlopEnentArr.count != 0{
+            if i + 1 == arrayWIthEvents.count && groupEventArr.count != 0{
                 if let start = arrayWIthEvents[i]["start"], let endOFLast =  arrayWIthEvents[i - 1]["end"], start < endOFLast{
                     
                     
                     
-                    OverlopEnentArr = addIndexInGroup(OverlopEnentArr: OverlopEnentArr, array: arrayWIthEvents, index: i)
+                    groupEventArr = addIndexInGroup(groupEventArr: groupEventArr, array: arrayWIthEvents, index: i)
                     
-                    indexOfMax = OverlopEnentArr.firstIndex(of: i) ?? 0
+                    indexOfMax = groupEventArr.firstIndex(of: i) ?? 0
                     
-                    if indexOfMax != 0, let start =           arrayWIthEvents[OverlopEnentArr[indexOfMax]]["start"], let endOfLast = arrayWIthEvents[OverlopEnentArr[indexOfMax - 1]]["end"],
+                    if indexOfMax != 0, let start =           arrayWIthEvents[groupEventArr[indexOfMax]]["start"], let endOfLast = arrayWIthEvents[groupEventArr[indexOfMax - 1]]["end"],
                         start > endOfLast ||
-                            indexOfMax + 1 < OverlopEnentArr.count, let endOfNext = arrayWIthEvents[OverlopEnentArr[indexOfMax + 1]]["end"],
+                            indexOfMax + 1 < groupEventArr.count, let endOfNext = arrayWIthEvents[groupEventArr[indexOfMax + 1]]["end"],
                         start >  endOfNext {
                         
                         widht -= 1
@@ -284,7 +303,7 @@ class ViewController: UIViewController {
                 
                 
 
-                arrayWIthEvents = getFrameOfEvents(OverlopEnentArr: OverlopEnentArr, arrayWIthBegin: arrayWIthEvents, widht: widht)
+                arrayWIthEvents = getFrameOfEvents(groupEventArr: groupEventArr, arrayWIthBegin: arrayWIthEvents, widht: widht, firstIndex: firstIndex)
                 
                 return i
             }
@@ -315,17 +334,17 @@ class ViewController: UIViewController {
                     maxHeight = end
                     maxHeightIndex = i
                 }
-                
-                
-                
-                if OverlopEnentArr.count != 0, let oldMaxHeightEnd = arrayWIthEvents[maxHeightIndex]["end"], let start = arrayWIthEvents[i]["start"], oldMaxHeightEnd > start{
+
+                if groupEventArr.count != 0,
+                    let oldMaxHeightEnd = arrayWIthEvents[oldMaxHeightIndex]["end"],
+                    let start = arrayWIthEvents[i]["start"], oldMaxHeightEnd >= start{
                     
                     
-                    OverlopEnentArr = addIndexInGroup(OverlopEnentArr: OverlopEnentArr, array: arrayWIthEvents, index: i)
+                    groupEventArr = addIndexInGroup(groupEventArr: groupEventArr, array: arrayWIthEvents, index: i)
                     
-                    indexOfMax = OverlopEnentArr.firstIndex(of: i) ?? 0
+                    indexOfMax = groupEventArr.firstIndex(of: i) ?? 0
                     
-                    if indexOfMax != 0, let start = arrayWIthEvents[OverlopEnentArr[indexOfMax]]["start"], let endOfLast = arrayWIthEvents[OverlopEnentArr[indexOfMax - 1]]["end"], start > endOfLast || indexOfMax + 1 < OverlopEnentArr.count, let endOfNext = arrayWIthEvents[OverlopEnentArr[indexOfMax + 1]]["end"], start >  endOfNext {
+                    if indexOfMax != 0, let start = arrayWIthEvents[groupEventArr[indexOfMax]]["start"], let endOfLast = arrayWIthEvents[groupEventArr[indexOfMax - 1]]["end"], start > endOfLast || indexOfMax + 1 < groupEventArr.count, let endOfNext = arrayWIthEvents[groupEventArr[indexOfMax + 1]]["end"], start >  endOfNext {
                         
                         widht -= 1
                         
@@ -340,27 +359,30 @@ class ViewController: UIViewController {
                 } else {
                     
                    
-                    arrayWIthEvents = getFrameOfEvents(OverlopEnentArr: OverlopEnentArr, arrayWIthBegin: arrayWIthEvents, widht: widht)
+                    arrayWIthEvents = getFrameOfEvents(groupEventArr: groupEventArr, arrayWIthBegin: arrayWIthEvents, widht: widht, firstIndex: firstIndex)
                     
                     widht = 1
                     
-                    OverlopEnentArr.removeAll()
-                    OverlopEnentArr.append(i)
+                    groupEventArr.removeAll()
+
+                    firstIndex = i
+
+                    groupEventArr.append(i)
                     
                 }
                 
-            } else if let start = arrayWIthEvents[i]["start"], OverlopEnentArr.isEmpty == false, let maxHeightEnd = arrayWIthEvents[OverlopEnentArr[0]]["end"], maxHeightEnd > start {
+            } else if let start = arrayWIthEvents[i]["start"], groupEventArr.isEmpty == false, let maxHeightEnd = arrayWIthEvents[groupEventArr[0]]["end"], maxHeightEnd > start {
                 
                 arrayWIthEvents[i]["overlop"] = 1
                 
                 
 
                 
-                OverlopEnentArr = addIndexInGroup(OverlopEnentArr: OverlopEnentArr, array: arrayWIthEvents, index: i)
+                groupEventArr = addIndexInGroup(groupEventArr: groupEventArr, array: arrayWIthEvents, index: i)
                 
-                indexOfMax = OverlopEnentArr.firstIndex(of: i) ?? 0
-                
-                if indexOfMax != 0, let start = arrayWIthEvents[OverlopEnentArr[indexOfMax]]["start"], let endOfLast = arrayWIthEvents[OverlopEnentArr[indexOfMax - 1]]["end"], start > endOfLast || indexOfMax + 1 < OverlopEnentArr.count, let endOfNext = arrayWIthEvents[OverlopEnentArr[indexOfMax + 1]]["end"], start >  endOfNext {
+                indexOfMax = groupEventArr.firstIndex(of: i) ?? 0
+                //тут бывает ошибка при очень сложном кейсе пофиксить ее. кейс лежит в коментах в arrray
+                if indexOfMax != 0, let start = arrayWIthEvents[groupEventArr[indexOfMax]]["start"], let endOfLast = arrayWIthEvents[groupEventArr[indexOfMax - 1]]["end"], start > endOfLast || indexOfMax + 1 < groupEventArr.count, let endOfNext = arrayWIthEvents[groupEventArr[indexOfMax + 1]]["end"], start >  endOfNext {
                     
                     widht -= 1
                     
@@ -368,13 +390,13 @@ class ViewController: UIViewController {
                 
                 widht += 1
                 
-            } else if lastEventInGroup + 1 == i && OverlopEnentArr.count != 0 {
+            } else if lastEventInGroup + 1 == i && groupEventArr.count != 0 {
                 
-                OverlopEnentArr = addIndexInGroup(OverlopEnentArr: OverlopEnentArr, array: arrayWIthEvents, index: i)
+                groupEventArr = addIndexInGroup(groupEventArr: groupEventArr, array: arrayWIthEvents, index: i)
                 
-                indexOfMax = OverlopEnentArr.firstIndex(of: i) ?? 0
+                indexOfMax = groupEventArr.firstIndex(of: i) ?? 0
                 
-                if indexOfMax != 0, let start = arrayWIthEvents[OverlopEnentArr[indexOfMax]]["start"], let endOfLast = arrayWIthEvents[OverlopEnentArr[indexOfMax - 1]]["end"], start > endOfLast || indexOfMax + 1 < OverlopEnentArr.count, let endOfNext = arrayWIthEvents[OverlopEnentArr[indexOfMax + 1]]["end"], start >  endOfNext {
+                if indexOfMax != 0, let start = arrayWIthEvents[groupEventArr[indexOfMax]]["start"], let endOfLast = arrayWIthEvents[groupEventArr[indexOfMax - 1]]["end"], start > endOfLast || indexOfMax + 1 < groupEventArr.count, let endOfNext = arrayWIthEvents[groupEventArr[indexOfMax + 1]]["end"], start >  endOfNext {
                     
                     widht -= 1
                     
@@ -383,9 +405,9 @@ class ViewController: UIViewController {
                 widht += 1
                 
                 
-                arrayWIthEvents = getFrameOfEvents(OverlopEnentArr: OverlopEnentArr, arrayWIthBegin: arrayWIthEvents, widht: widht)
+                arrayWIthEvents = getFrameOfEvents(groupEventArr: groupEventArr, arrayWIthBegin: arrayWIthEvents, widht: widht, firstIndex: firstIndex)
                
-                OverlopEnentArr.removeAll()
+                groupEventArr.removeAll()
                 
             } else {
                 return i
@@ -396,7 +418,7 @@ class ViewController: UIViewController {
         }
         var go: Int = 0
         while go <= arrayWIthEvents.count - 1{
-            
+            print(go)
             go = oneCount(i: go) + 1
             
         }
