@@ -11,6 +11,8 @@ import UIKit
 var lastIndex: [Int] = []
 var time: Double = 0
 
+//TODO: доработать влияние нижних уровней на верхнии
+
 class CreateGroup: UIViewController {
 
     override func viewDidLoad() {
@@ -103,7 +105,70 @@ class CreateGroup: UIViewController {
         if nextInGroup == 1,
            position == addArrayCount{
 
-            groupEvent[level].append(index)
+            if let startLastEvent = array[index - 1]["start"],
+                endLast - startLastEvent > end - start {
+
+                groupEvent[level].append(index)
+                lastIndex = [level,position + 1]
+            } else {
+
+                var indexMin : Int
+                var indexMax : Int
+
+                var oldindexMid: Int = -1
+                if let startLast = array[index - 1]["start"],
+                    endLast - startLast > end - start{
+                    indexMin = position
+                    indexMax = addArray.endIndex - 1
+                } else {
+                    indexMin = addArray.startIndex
+                    indexMax = position
+                }
+                while indexMin <= indexMax{
+
+                    let indexMid = indexMin + (indexMax - indexMin)/2
+
+                    if oldindexMid == indexMid{
+
+                        groupEvent[level].insert(index, at: indexMid)
+                        lastIndex = [level,indexMid]
+
+                        break
+                    }
+
+                    guard let begin = array[groupEvent[level][indexMid]]["start"] else { return }
+
+                    guard let end = array[groupEvent[level][indexMid]]["end"] else { return }
+
+                    guard let beginOfnext = array[groupEvent[level][indexMid + 1]]["start"] else { return }
+
+                    guard let endOfNext = array[groupEvent[level][indexMid + 1]]["end"] else { return }
+                    let lengthOfNext = endOfNext -  beginOfnext
+
+                    let lengthMid = end - begin
+
+                    if lengthMid >= length && length >= lengthOfNext{
+                        groupEvent[level].insert(index, at: indexMid + 1)
+                        lastIndex = [level,indexMid + 1]
+                        return
+                    }
+
+                    if length <= lengthMid{
+
+                        indexMin = indexMid
+
+                    }
+                    else{
+
+                        indexMax = indexMid
+
+                    }
+
+                    oldindexMid = indexMid
+
+                }
+
+            }
 
         } else
         if nextInGroup == 1{
