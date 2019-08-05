@@ -15,8 +15,8 @@ var array: Array =
         ["start": 10, "end" : 20], //0
         ["start": 50, "end" : 90], //1
         ["start": 100, "end" : 150 ], //2 +
-        //["start": 100, "end" : 150 ],
-        //["start": 100, "end" : 150 ],
+        ["start": 100, "end" : 150 ],
+        ["start": 100, "end" : 150 ],
          //6
         ["start": 105, "end" : 750], //3 + 645
         ["start": 110, "end" : 160 ],
@@ -24,7 +24,7 @@ var array: Array =
         ["start": 130, "end" : 170],//4 +
         ["start": 130, "end" : 710], //5 + 580
         ["start": 300, "end" : 399 ],
-        //["start": 300, "end" : 399 ],
+        ["start": 300, "end" : 399 ],
          //["start": 330, "end" : 420 ],
        // ["start": 309, "end" : 399 ],
         ["start": 309, "end" : 1480 ],
