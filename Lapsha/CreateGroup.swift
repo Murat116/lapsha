@@ -60,10 +60,9 @@ class CreateGroup: UIViewController {
     var lastIndex: [Int] = []
 
     var arrayEventsCount = array.count - 1
-    var groupEventCount = 0
     var maxEnd = 0
     var matrixGroup = [[Int]]()
-    var groupElementCount = [Int]()
+    var groupElementsCount = [Int]()
 
     func addInMatrix(index: Int,length : Int, groupEvent: inout [[Int]], array: [[String:Int]], nextInGroup: Int, endLast: Int) {
 
@@ -83,7 +82,7 @@ class CreateGroup: UIViewController {
 
             var oldindexMid: Int = -1
             if let startLast = array[index - 1]["start"],
-                endLast - startLast > end - start{
+                endLast - startLast >= end - start{
                 indexMin = position
                 indexMax = addArray.endIndex - 1
             } else {
@@ -108,10 +107,10 @@ class CreateGroup: UIViewController {
                 guard let endOfNext = array[groupEvent[level][indexMid + 1]]["end"] else { return }
 
                 if oldindexMid == indexMid {
-                    if end - start < length{
+                    if end - start <= length{
                         print(index,indexMid,"первый кейс add in matrix")
                         lastIndex = [level,indexMid]
-                    } else if end - start > length{
+                    } else if end - start >= length{
                         print(index,indexMid,"первый кейс add in matrix")
                         lastIndex = [level,indexMid + 1]
                     }
@@ -148,7 +147,7 @@ class CreateGroup: UIViewController {
             }
         }
 
-        if position < (addArrayCount + 1 - groupElementCount[level]){
+        if position < (addArrayCount + 1 - groupElementsCount[level]){
 
 
 
@@ -168,7 +167,7 @@ class CreateGroup: UIViewController {
 
             var oldindexMid: Int = -1
             if let startLast = array[index - 1]["start"],
-                endLast - startLast > end - start{
+                endLast - startLast >= end - start{
                 indexMin = position
                 indexMax = addArray.endIndex - 1
             } else {
@@ -193,13 +192,13 @@ class CreateGroup: UIViewController {
                         groupEvent[level].insert(index, at: indexMid)
                         print(index,indexMid,"второй (1) кейс add in matrix")
                         lastIndex = [level,indexMid]
-                    } else if end - start > length{
+                    } else if end - start >= length{
                         groupEvent[level].insert(index, at: indexMid + 1)
                         print(index,indexMid,"второй (2) кейс add in matrix")
                         lastIndex = [level,indexMid + 1]
                     }
 
-                    groupElementCount[level] = groupElementCount[level] + 1
+                    groupElementsCount[level] = groupElementsCount[level] + 1
                     break
                 }
 
@@ -210,7 +209,7 @@ class CreateGroup: UIViewController {
                 if lengthMid >= length && length >= lengthOfNext{
                     groupEvent[level].insert(index, at: indexMid + 1)
                     lastIndex = [level,indexMid + 1]
-                    groupElementCount[level] = groupElementCount[level] + 1
+                    groupElementsCount[level] = groupElementsCount[level] + 1
 
                     return
                 }
@@ -230,14 +229,14 @@ class CreateGroup: UIViewController {
 
             }
 
-            if level > 0 && lastIndex[1] < (groupEvent[level].count - groupElementCount.count){
+            if level > 0 && lastIndex[1] < (groupEvent[level].count - groupElementsCount.count){
 
                 let addedIndex = lastIndex[1]
 
                 for i in 0...level - 1{
                     groupEvent[i].insert(index, at: addedIndex)
                     if i != level || level == 0{
-                        groupElementCount[i] = groupElementCount[i] + 1
+                        groupElementsCount[i] = groupElementsCount[i] + 1
                         print(index,i,level,"index appendin new level")
                     }
                 }
@@ -256,7 +255,7 @@ class CreateGroup: UIViewController {
 
                 groupEvent[level].append(index)
                 lastIndex = [level,position + 1]
-                groupElementCount[level] = groupElementCount[level] + 1
+                groupElementsCount[level] = groupElementsCount[level] + 1
             } else {
                 //в обратном случае ищем бин поиском куда его вставить
                 print(index, "второй кейс второй кейс начало")
@@ -275,7 +274,7 @@ class CreateGroup: UIViewController {
                             startDrop < endDrop{
                             groupEvent[i].insert(index, at: addedIndex)
                             if i != level || level == 0{
-                                groupElementCount[i] = groupElementCount[i] + 1
+                                groupElementsCount[i] = groupElementsCount[i] + 1
                                  print(index,i,level,"index append in new level")
                             }
                         }
@@ -303,7 +302,7 @@ class CreateGroup: UIViewController {
             let newLevel = groupEvent.count -  1
             lastIndex = [newLevel,position + 1]
             print(index,"index append")
-            groupElementCount.append(1)
+            groupElementsCount.append(1)
 
         }else{
 
@@ -329,7 +328,7 @@ class CreateGroup: UIViewController {
                     for i in 0...level{
                         groupEvent[i].insert(index, at: addedIndex)
                         if i != level || level == 0{
-                            groupElementCount[i] = groupElementCount[i] + 1
+                            groupElementsCount[i] = groupElementsCount[i] + 1
                             print(index,i,level,"index append in new level")
                         }
                     }
@@ -349,8 +348,8 @@ class CreateGroup: UIViewController {
                 lastIndex = [newLevel,newLevelArray.count - 1]
             }
 
-            print(groupElementCount,"как меняется высота ")
-            groupElementCount.append(1)
+            print(groupElementsCount,"как меняется высота ")
+            groupElementsCount.append(1)
 
         }
 
@@ -413,7 +412,6 @@ class CreateGroup: UIViewController {
         if matrixGroup.count - 1 > level{
             createFrame(matrixEvent: matrixEvent, arrayWithEvents: &arrayWithEvents, groupElementCount: groupElementCount, level: (level + 1))
         }
-
     }
 
 
@@ -426,7 +424,7 @@ class CreateGroup: UIViewController {
         //если следующего события не сушествует то выходим
         if i >= arrayEventsCount{
             if matrixGroup.isEmpty == false {
-                createFrame(matrixEvent: matrixGroup, arrayWithEvents: &arrayWithEvents, groupElementCount: groupElementCount)
+                createFrame(matrixEvent: matrixGroup, arrayWithEvents: &arrayWithEvents, groupElementCount: groupElementsCount)
             }
 
             return i
@@ -489,18 +487,19 @@ class CreateGroup: UIViewController {
             }
 
 
-            groupElementCount.append(2)
+            groupElementsCount.append(2)
             return createGroup(i: i + 2, arrayWithEvents: &arrayWithEvents)
         }
 
         //если мы ничего не добавили значит в группу дальнейшие события не входят значит рассчитывает событий и удаляем масив с группов событий
         if matrixGroup.isEmpty == false{
-            createFrame(matrixEvent: matrixGroup, arrayWithEvents: &arrayWithEvents, groupElementCount: groupElementCount)
+            createFrame(matrixEvent: matrixGroup, arrayWithEvents: &arrayWithEvents, groupElementCount: groupElementsCount)
+
+            groupElementsCount.removeAll()
+            matrixGroup.removeAll()
+
+            return createGroup(i: i - 1, arrayWithEvents: &arrayWithEvents)
         }
-
-        groupElementCount.removeAll()
-        matrixGroup.removeAll()
-
 
         return createGroup(i: i + 1, arrayWithEvents: &arrayWithEvents)
 
@@ -526,5 +525,6 @@ class CreateGroup: UIViewController {
 //0.004547633622822009
 //0.003830355756423053 без аномально больших
 
-
+//0.0023010969161987305,0.006704092025756836,0.008327007293701172,0.0021790266036987305,0.0030269622802734375,0.002604961395263672
+//0.005028629302978515
 

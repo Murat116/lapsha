@@ -12,17 +12,17 @@ import Foundation
 
 var array: Array =
     [
-        ["start": 10, "end" : 20], //0
+       // ["start": 10, "end" : 20], //0
         ["start": 50, "end" : 90], //1
-        ["start": 100, "end" : 150 ], //2 +
+        //["start": 100, "end" : 150 ], //2 +
         ["start": 100, "end" : 150 ],
-        ["start": 100, "end" : 150 ],//4
+        //["start": 100, "end" : 150 ],//4
          //6
         ["start": 105, "end" : 299], //5 + 645
         ["start": 110, "end" : 160 ],
         ["start": 120, "end" : 160],
         ["start": 130, "end" : 170],//4 +
-        ["start": 298, "end" : 1480], //8 + 580
+        //["start": 298, "end" : 1480], //8 + 580
         ["start": 300, "end" : 399 ],//10
         ["start": 300, "end" : 399 ],
         ["start": 309, "end" : 399 ],
@@ -35,10 +35,10 @@ var array: Array =
         ["start" : 1300, "end" : 1400], //15 + 7000
         ["start" : 1500, "end" : 1600], //10
         ["start" : 1700, "end" : 1800], //12
-        ["start" : 1900, "end" : 2000],//13
+        //["start" : 1900, "end" : 2000],//13
         ["start" : 1950, "end": 3000],
         ["start" : 2100, "end": 3060],
-        ["start" : 3100, "end":3200],
+      //  ["start" : 3100, "end":3200],
        
        
 ]
