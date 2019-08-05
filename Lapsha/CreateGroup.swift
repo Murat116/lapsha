@@ -8,25 +8,65 @@
 
 import UIKit
 
-var lastIndex: [Int] = []
-var time: Double = 0
+
 
 //TODO: доработать влияние нижних уровней на верхнии
 
 class CreateGroup: UIViewController {
+
+     @IBOutlet weak var scroolView: UIScrollView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
         let start = CFAbsoluteTimeGetCurrent()
 
-        createGroup(arrayWithEvents: array)
-        print(time, "время")
+        createGroup(arrayWithEvents: &array)
+
         print(CFAbsoluteTimeGetCurrent() - start)
+
+        for i in 0..<array.count{
+
+            //height of event
+            let height = array[i]["end"]! - array[i]["start"]!
+
+            //width of screen
+            let defualtWidth = Int(UIScreen.main.bounds.width)
+
+            //create view
+            let myNewView = UIView(frame: CGRect(x: array[i]["x"] ?? 0, y: array[i]["start"]!, width: array[i]["widht"] ?? defualtWidth , height: height))
+
+            //grete rundom background color
+            let color = UIColor(red: CGFloat(Float.random(in: 0...1.0)), green: CGFloat(Float.random(in: 0...1.0)), blue: CGFloat(Float.random(in: 0...1.0)), alpha: 0.7)
+            myNewView.backgroundColor = color
+
+            let label = UILabel(frame: CGRect(x: myNewView.frame.size.width / 2, y: myNewView.frame.size.height / 2 , width: 20, height: 20))
+
+            label.text = String(i)
+
+            myNewView.addSubview(label)
+            //add view in scrool
+            self.scroolView.addSubview(myNewView)
+        }
+
+        self.scroolView.frame = self.view.frame
+
+        //create height of scrool
+        self.scroolView.contentSize.height = 5000
+        self.scroolView.contentSize.width = 1000
+
+
+
 
         }
 
+    var lastIndex: [Int] = []
+    var time: Double = 0
+    var arrayEventsCount = array.count - 1
+    var groupEventCount = 0
+    var maxEnd = 0
     var matrixGroup = [[Int]]()
+    var groupElementCount = [Int]()
 
     func addInMatrix(index: Int,length : Int, groupEvent: inout [[Int]], array: [[String:Int]], nextInGroup: Int, endLast: Int) {
 
@@ -65,7 +105,7 @@ class CreateGroup: UIViewController {
 
                     groupEvent[level].insert(index, at: indexMid + 1)
                     lastIndex = [level,indexMid + 1]
-
+                    groupElementCount[level] = groupElementCount[level] + 1
                     break
                 }
 
@@ -83,6 +123,8 @@ class CreateGroup: UIViewController {
                 if lengthMid >= length && length >= lengthOfNext{
                     groupEvent[level].insert(index, at: indexMid + 1)
                     lastIndex = [level,indexMid + 1]
+                    groupElementCount[level] = groupElementCount[level] + 1
+                    //TODO: - че тут ретерн делает исправь
                     return
                 }
 
@@ -110,6 +152,7 @@ class CreateGroup: UIViewController {
 
                 groupEvent[level].append(index)
                 lastIndex = [level,position + 1]
+                groupElementCount[level] = groupElementCount[level] + 1
             } else {
 
                 var indexMin : Int
@@ -148,8 +191,9 @@ class CreateGroup: UIViewController {
                     let lengthMid = end - begin
 
                     if lengthMid >= length && length >= lengthOfNext{
-                        groupEvent[level].insert(index, at: indexMid + 1)
-                        lastIndex = [level,indexMid + 1]
+                        groupEvent[level].insert(index, at: indexMid)
+                        lastIndex = [level,indexMid]
+
                         return
                     }
 
@@ -166,6 +210,19 @@ class CreateGroup: UIViewController {
 
                     oldindexMid = indexMid
 
+                }
+                
+
+                if lastIndex[1] == 0{
+                    for i in 0...level - 1{
+                        groupEvent[i].insert(index, at: 0)
+                        groupElementCount[i] = groupElementCount[i] + 1
+                    }
+                } else {
+                    for i in 0...level - 1{
+                        groupEvent[i].insert(index, at: lastIndex[1])
+                        groupElementCount[i] = groupElementCount[i] + 1
+                    }
                 }
 
             }
@@ -184,6 +241,8 @@ class CreateGroup: UIViewController {
             groupEvent.append(newLevelArray)
             let newLevel = groupEvent.count -  1
             lastIndex = [newLevel,position + 1]
+            groupElementCount.append(1)
+
         }else{
 
             var newLevelArray = [Int]()
@@ -199,81 +258,77 @@ class CreateGroup: UIViewController {
             groupEvent.append(newLevelArray)
             let newLevel = groupEvent.count -  1
             lastIndex = [newLevel,newLevelArray.count - 1]
+            groupElementCount.append(1)
 
         }
 
         time = time + (CFAbsoluteTimeGetCurrent() - startTime)
     }
-    
-    func addInGroup(index: Int,length : Int, groupEvent: inout [Int], array: [[String:Int]]) {
 
-        var indexMin = groupEvent.startIndex
-        var indexMax = groupEvent.endIndex-1
-        var oldindexMid = 0
+    func createFrame(matrixEvent: [[Int]], arrayWithEvents: inout [[String:Int]], groupElementCount: [Int], level: Int = 0){
 
-        //binary search index
-        while indexMin <= indexMax{
 
-            let indexMid = indexMin + (indexMax - indexMin)/2
+        let screenWidht = Int(UIScreen.main.bounds.width)
+        let elementCount = groupElementCount[level]
 
-            if oldindexMid == indexMid{
-                groupEvent.insert(index, at: indexMid + 1)
-                break
-            }
+        var levelCount =  matrixEvent[level].count - 1
+        var stepsCount = 0
+        let startI = levelCount - elementCount
 
-            guard let begin = array[groupEvent[indexMid]]["start"] else {
-                return
-            }
 
-            guard let end = array[groupEvent[indexMid]]["end"] else {
-                return
-            }
+        let widht: Int
 
-            guard let beginOfnext = array[groupEvent[indexMid + 1]]["start"] else {
-                return
-            }
+        if startI >= 0{
 
-            guard let endOfNext = array[groupEvent[indexMid + 1]]["end"] else {
-                return
-            }
-            let lengthOfNext = endOfNext -  beginOfnext
+            let startIndex = matrixEvent[level][startI]
 
-            let lengthMid = end - begin
+            guard let x = arrayWithEvents[startIndex]["x"] else { return }
+            guard let widhtIndex = arrayWithEvents[startIndex]["widht"] else { return }
 
-            if lengthMid >= length && length >= lengthOfNext{
-                groupEvent.insert(index, at: indexMid + 1)
-                return
-            }
+            widht = (screenWidht - x - widhtIndex) / elementCount
 
-            if length <= lengthMid{
-
-                indexMin = indexMid
-
-            }
-            else{
-
-                indexMax = indexMid
-
-            }
-
-            oldindexMid = indexMid
-
+        }else {
+            widht = screenWidht / elementCount
         }
+        let index = matrixEvent[level][levelCount]
+        arrayWithEvents[index]["x"] = screenWidht - widht
+        arrayWithEvents[index]["widht"] = widht
+        levelCount -= 1
+        stepsCount += 1
+
+
+        while stepsCount != elementCount && levelCount >= 0 {
+
+            let array = matrixEvent[level]
+            let nextIndex = array[levelCount + 1]
+
+            let index = array[levelCount]
+
+            arrayWithEvents[index]["x"] = arrayWithEvents[nextIndex]["x"]! - widht
+            arrayWithEvents[index]["widht"] = widht
+            stepsCount += 1
+            levelCount -= 1
+        }
+
+        if matrixGroup.count - 1 > level{
+            createFrame(matrixEvent: matrixEvent, arrayWithEvents: &arrayWithEvents, groupElementCount: groupElementCount, level: (level + 1))
+        }
+
     }
 
-    var arrayEventsCount = array.count - 1
-    var groupEventCount = 0
-    var maxEnd = 0
 
-    func createGroup(i: Int = 0, arrayWithEvents: [[String:Int]]) -> Int {
+
+    func createGroup(i: Int = 0, arrayWithEvents: inout [[String:Int]]) -> Int {
 
         let start = "start" //key start
         let end = "end" //key end
 
         //если следующего события не сушествует то выходим
         if i >= arrayEventsCount{
+            if matrixGroup.isEmpty == false {
+                createFrame(matrixEvent: matrixGroup, arrayWithEvents: &arrayWithEvents, groupElementCount: groupElementCount)
+            }
 
-            print(matrixGroup)
             return i
         }
 
@@ -301,7 +356,8 @@ class CreateGroup: UIViewController {
                 maxEnd = endIndex
             }
 
-            return createGroup(i: i + 1, arrayWithEvents: arrayWithEvents)
+
+            return createGroup(i: i + 1, arrayWithEvents: &arrayWithEvents)
         }
 
         guard let startNext =  arrayWithEvents[i+1][start] else { return i }
@@ -332,16 +388,21 @@ class CreateGroup: UIViewController {
                 maxEnd = endIndex
             }
 
-            return createGroup(i: i + 2, arrayWithEvents: arrayWithEvents)
+
+            groupElementCount.append(2)
+            return createGroup(i: i + 2, arrayWithEvents: &arrayWithEvents)
         }
 
         //если мы ничего не добавили значит в группу дальнейшие события не входят значит рассчитывает событий и удаляем масив с группов событий
-        //делаем рассчеты
-        print(matrixGroup)
-        matrixGroup.removeAll()
-        print(i, "вне")
+        if matrixGroup.isEmpty == false{
+            createFrame(matrixEvent: matrixGroup, arrayWithEvents: &arrayWithEvents, groupElementCount: groupElementCount)
+        }
 
-        return createGroup(i: i + 1, arrayWithEvents: arrayWithEvents)
+        groupElementCount.removeAll()
+        matrixGroup.removeAll()
+
+
+        return createGroup(i: i + 1, arrayWithEvents: &arrayWithEvents)
 
     }
 }
@@ -356,3 +417,10 @@ class CreateGroup: UIViewController {
 
 //v2 использую матрицу  0.001186966896057129, 0.0014560222625732422, 0.002389073371887207, 0.002418994903564453, 0.0012890100479125977, 0.001909017562866211, 0.0012720823287963867, 0.0010900497436523438, 0.002328038215637207, 0.0015659332275390625, 0.0013710260391235352, 0.0015000104904174805
 //0.001797838644547896
+
+//v2 с заданием параметров 0.0008449554443359375, 0.0008090734481811523, 0.0008510351181030273, 0.000782012939453125, 0.0008399486541748047, 0.0008139610290527344, 0.000904083251953125, 0.0009250640869140625
+//0.0009671619960239955
+
+
+
+
