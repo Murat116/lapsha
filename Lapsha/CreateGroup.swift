@@ -12,6 +12,7 @@ import UIKit
 class CreateGroup: UIViewController {
 
      @IBOutlet weak var scroolView: UIScrollView!
+    @IBOutlet weak var lavel: UILabel!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,8 +20,11 @@ class CreateGroup: UIViewController {
         let start = CFAbsoluteTimeGetCurrent()
 
         createGroup(arrayWithEvents: &array)
+        let dif = CFAbsoluteTimeGetCurrent() - start
 
-        print(CFAbsoluteTimeGetCurrent() - start)
+        print(dif)
+
+        lavel.text = String(dif)
 
         for i in 0..<array.count{
 
@@ -52,34 +56,29 @@ class CreateGroup: UIViewController {
         //create height of scrool
         self.scroolView.contentSize.height = 3200
 
-
-
-
-
-        }
+    }
 
     var lastIndex: [Int] = []
-
     var arrayEventsCount = array.count - 1
     var maxEnd = 0
     var matrixGroup = [[Int]]()
     var groupElementsCount = [Int]()
 
-    func addInMatrix(index: Int,length : Int, groupEvent: inout [[Int]], array: [[String:Int]], nextInGroup: Int, endLast: Int) {
 
-        print(index, "индекс который надо добавить в группу")
+    func addInMatrix(index: Int,length : Int, array: [[String:Int]], nextInGroup: Int, endLast: Int) {
 
         guard let start = array[index]["start"] else { return }
         guard let end = array[index]["end"] else { return }
 
         let level = lastIndex[0]
         let position = lastIndex[1]
-        let addArray = groupEvent[level]
+        let addArray = matrixGroup[level]
         let addArrayCount = addArray.count - 1
 
         func binarySearchj(){
             var indexMin : Int
             var indexMax : Int
+            let addedLevel = matrixGroup[level]
 
             var oldindexMid: Int = -1
             if let startLast = array[index - 1]["start"],
@@ -99,20 +98,20 @@ class CreateGroup: UIViewController {
                     break
                 }
 
-                guard let begin = array[groupEvent[level][indexMid]]["start"] else { return }
+                guard let begin = array[addedLevel[indexMid]]["start"] else { return }
 
-                guard let end = array[groupEvent[level][indexMid]]["end"] else { return }
+                guard let end = array[addedLevel[indexMid]]["end"] else { return }
 
-                guard let beginOfnext = array[groupEvent[level][indexMid + 1]]["start"] else { return }
+                guard let beginOfnext = array[addedLevel[indexMid + 1]]["start"] else { return }
 
-                guard let endOfNext = array[groupEvent[level][indexMid + 1]]["end"] else { return }
+                guard let endOfNext = array[addedLevel[indexMid + 1]]["end"] else { return }
 
                 if oldindexMid == indexMid {
                     if end - start <= length{
-                        print(index,indexMid,"первый кейс add in matrix")
+
                         lastIndex = [level,indexMid]
                     } else if end - start >= length{
-                        print(index,indexMid,"первый кейс add in matrix")
+
                         lastIndex = [level,indexMid + 1]
                     }
 
@@ -126,8 +125,6 @@ class CreateGroup: UIViewController {
                 if lengthMid >= length && length >= lengthOfNext{
 
                     lastIndex = [level,indexMid + 1]
-
-                    print(index, indexMid, "второй кес второй кейс найденно место")
 
                     break
                 }
@@ -148,13 +145,6 @@ class CreateGroup: UIViewController {
             }
         }
 
-        if position < (addArrayCount + 1 - groupElementsCount[level]){
-
-
-
-            print(index, "проблемый индекс")
-        }
-
         //если нынешнее события должно идти в ветке после прошлого события
         if nextInGroup == 1,
             position + 1 <= addArrayCount,
@@ -162,7 +152,6 @@ class CreateGroup: UIViewController {
             endNext >= start
             {
 
-            print(index, "первый кейс начало")
             var indexMin : Int
             var indexMax : Int
 
@@ -179,27 +168,30 @@ class CreateGroup: UIViewController {
 
                 let indexMid = indexMin + (indexMax - indexMin)/2
 
-                guard let begin = array[groupEvent[level][indexMid]]["start"] else { return }
+                guard let begin = array[matrixGroup[level][indexMid]]["start"] else { return }
 
-                guard let end = array[groupEvent[level][indexMid]]["end"] else { return }
+                guard let end = array[matrixGroup[level][indexMid]]["end"] else { return }
 
-                guard let beginOfnext = array[groupEvent[level][indexMid + 1]]["start"] else { return }
+                guard let beginOfnext = array[matrixGroup[level][indexMid + 1]]["start"] else { return }
 
-                guard let endOfNext = array[groupEvent[level][indexMid + 1]]["end"] else { return }
+                guard let endOfNext = array[matrixGroup[level][indexMid + 1]]["end"] else { return }
 
                 if oldindexMid == indexMid {
 
                     if end - start <= length{
-                        groupEvent[level].insert(index, at: indexMid)
-                        print(index,indexMid,"второй (1) кейс add in matrix")
+
+                        matrixGroup[level].insert(index, at: indexMid)
                         lastIndex = [level,indexMid]
+
                     } else if end - start >= length{
-                        groupEvent[level].insert(index, at: indexMid + 1)
-                        print(index,indexMid,"второй (2) кейс add in matrix")
+
+                        matrixGroup[level].insert(index, at: indexMid + 1)
                         lastIndex = [level,indexMid + 1]
+
                     }
 
                     groupElementsCount[level] = groupElementsCount[level] + 1
+
                     break
                 }
 
@@ -208,7 +200,7 @@ class CreateGroup: UIViewController {
                 let lengthMid = end - begin
 
                 if lengthMid >= length && length >= lengthOfNext{
-                    groupEvent[level].insert(index, at: indexMid + 1)
+                    matrixGroup[level].insert(index, at: indexMid + 1)
                     lastIndex = [level,indexMid + 1]
                     groupElementsCount[level] = groupElementsCount[level] + 1
 
@@ -230,15 +222,15 @@ class CreateGroup: UIViewController {
 
             }
 
-            if level > 0 && lastIndex[1] < (groupEvent[level].count - groupElementsCount.count){
+            if level > 0 && lastIndex[1] < (addArrayCount + 1 - groupElementsCount.count){
 
                 let addedIndex = lastIndex[1]
 
                 for i in 0...level - 1{
-                    groupEvent[i].insert(index, at: addedIndex)
+                    matrixGroup[i].insert(index, at: addedIndex)
                     if i != level || level == 0{
                         groupElementsCount[i] = groupElementsCount[i] + 1
-                        print(index,i,level,"index appendin new level")
+
                     }
                 }
             }
@@ -246,51 +238,42 @@ class CreateGroup: UIViewController {
         }  else if nextInGroup == 1, //если нынешний индекс идет прошлым и прошлое последнее в ветке
            position == addArrayCount{
 
-            print(index, "влияение n-ого элементаначало")
-
             //если высота нынешнего меньше предыдущего
             if let startLastEvent = array[index - 1]["start"],
                 endLast - startLastEvent >= end - start {
 
-                print(index, "второй кейс первый кейс начало")
-
-                groupEvent[level].append(index)
+                matrixGroup[level].append(index)
                 lastIndex = [level,position + 1]
                 groupElementsCount[level] = groupElementsCount[level] + 1
             } else {
                 //в обратном случае ищем бин поиском куда его вставить
-                print(index, "второй кейс второй кейс начало")
 
             binarySearchj()
 
                 //если мы его вставили до общих событий на несколько групп, тогда мы добавляем это событий и в прошлые группы
                 if level >= 0{
-                    print(index, "влияение нулевого элемента на высшие уровни")
 
                     let addedIndex = lastIndex[1]
 
                     for i in 0...level{
+
                         if let startDrop = array[index]["start"],
-                            let endDrop = array[groupEvent[i][addedIndex]]["end"],
+                            let endDrop = array[matrixGroup[i][addedIndex]]["end"],
                             startDrop < endDrop{
-                            groupEvent[i].insert(index, at: addedIndex)
-                            print(index,i,"добавлен во втором кейсе второго кейса в матрицу")
+                            matrixGroup[i].insert(index, at: addedIndex)
 
                                 groupElementsCount[i] = groupElementsCount[i] + 1
-                                 print(index,i,level,"index append in new level")
 
                         }
                     }
                 }
 
-                print(index, "второй кейс конец")
+
 
             }
 
         } else
         if nextInGroup == 1{ //во всех остальных случаях подряд накалдывающихся событий мы создаем новую ветку, т.к они начинаються с новой ветки
-
-            print(index, "третий кейс начало")
 
             let removeCount = addArrayCount - position
             var newLevelArray = addArray
@@ -300,15 +283,13 @@ class CreateGroup: UIViewController {
             }
 
             newLevelArray.append(index)
-            groupEvent.append(newLevelArray)
-            let newLevel = groupEvent.count -  1
+            matrixGroup.append(newLevelArray)
+            let newLevel = matrixGroup.count -  1
             lastIndex = [newLevel,position + 1]
-            print(index,"index append")
+
             groupElementsCount.append(1)
 
         }else{
-
-            print(index, "четвертый кейс начало")
 
             var newLevelArray = [Int]()
             //ищем куда вставить
@@ -317,27 +298,28 @@ class CreateGroup: UIViewController {
             //если вставили после общих то все ок  алго уже есть
             let lastlastIndex = lastIndex
             binarySearchj()
+
             if lastIndex[1] == 0{
                 newLevelArray = [index]
-                groupEvent.append(newLevelArray)
+                matrixGroup.append(newLevelArray)
                 lastIndex[0] = lastlastIndex[0] + 1
 
                 if level >= 0{
-                    print(index, "влияение нулевого элемента на высшие уровни")
 
                     let addedIndex = lastIndex[1]
 
                     for i in 0...level{
-                        groupEvent[i].insert(index, at: addedIndex)
+                        matrixGroup[i].insert(index, at: addedIndex)
                         if i != level || level == 0{
                             groupElementsCount[i] = groupElementsCount[i] + 1
-                            print(index,i,level,"index append in new level")
+
                         }
                     }
                 }
-
             } else {
+
                 for i in 0...addArrayCount{
+
                     if let endBefore = array[addArray[i]]["end"],
                         endBefore > start{
                         newLevelArray.append(addArray[i])
@@ -345,71 +327,64 @@ class CreateGroup: UIViewController {
                 }
 
                 newLevelArray.append(index)
-                groupEvent.append(newLevelArray)
-                let newLevel = groupEvent.count -  1
+                matrixGroup.append(newLevelArray)
+                let newLevel = matrixGroup.count -  1
                 lastIndex = [newLevel,newLevelArray.count - 1]
             }
 
-            print(groupElementsCount,"как меняется высота ")
             groupElementsCount.append(1)
 
         }
 
-        print(groupEvent)
+
 
     }
 
-    func createFrame(matrixEvent: [[Int]], arrayWithEvents: inout [[String:Int]], groupElementCount: [Int], level: Int = 0){
+    func createFrame(arrayWithEvents: inout [[String:Int]], groupElementCount: [Int], level: Int = 0){
 
-        print(matrixEvent)
-        print(groupElementCount)
 
-        print(level,"level")
         let screenWidht = Int(UIScreen.main.bounds.width)
-        var elementCount = groupElementCount[level]
 
-        var levelCount =  matrixEvent[level].count - 1
+        var elementCount = groupElementCount[level]
+        var levelCount =  matrixGroup[level].count - 1
         var stepsCount = 0
         var startI = levelCount - elementCount
-
-        print(startI + 1,"startI")
-
         let widht: Int
 
-        if arrayWithEvents[matrixEvent[level][startI + 1]]["x"] != nil{
+        if arrayWithEvents[matrixGroup[level][startI + 1]]["x"] != nil{
+
             elementCount -= 1
         }
-        startI = levelCount - elementCount
 
+        startI = levelCount - elementCount
 
         if level != 0{
 
-            let startIndex = matrixEvent[level][startI]
-
+            let startIndex = matrixGroup[level][startI]
             guard let x = arrayWithEvents[startIndex]["x"] else { return }
             guard let widhtIndex = arrayWithEvents[startIndex]["widht"] else { return }
 
             widht = (screenWidht - x - widhtIndex) / elementCount
 
         }else {
+
             widht = screenWidht / elementCount
         }
-        let index = matrixEvent[level][levelCount]
+
+        let index = matrixGroup[level][levelCount]
+
         arrayWithEvents[index]["x"] = screenWidht - widht
         arrayWithEvents[index]["widht"] = widht
+
         levelCount -= 1
         stepsCount += 1
 
-        print(index, "начальный индекс")
-
         while stepsCount != elementCount && levelCount >= 0 {
 
-            let array = matrixEvent[level]
+            let array = matrixGroup[level]
             let nextIndex = array[levelCount + 1]
 
             let index = array[levelCount]
-
-            print(index,"дальнейшний индекс")
 
             arrayWithEvents[index]["x"] = arrayWithEvents[nextIndex]["x"]! - widht
             arrayWithEvents[index]["widht"] = widht
@@ -418,11 +393,9 @@ class CreateGroup: UIViewController {
         }
 
         if matrixGroup.count - 1 > level{
-            createFrame(matrixEvent: matrixEvent, arrayWithEvents: &arrayWithEvents, groupElementCount: groupElementCount, level: (level + 1))
+            createFrame(arrayWithEvents: &arrayWithEvents, groupElementCount: groupElementCount, level: (level + 1))
         }
     }
-
-
 
     func createGroup(i: Int = 0, arrayWithEvents: inout [[String:Int]]) -> Int {
 
@@ -432,7 +405,7 @@ class CreateGroup: UIViewController {
         //если следующего события не сушествует то выходим
         if i >= arrayEventsCount{
             if matrixGroup.isEmpty == false {
-                createFrame(matrixEvent: matrixGroup, arrayWithEvents: &arrayWithEvents, groupElementCount: groupElementsCount)
+                createFrame(arrayWithEvents: &arrayWithEvents, groupElementCount: groupElementsCount)
             }
 
             return i
@@ -452,9 +425,9 @@ class CreateGroup: UIViewController {
 
             //проверка на данном этапе уменьшает количество дейтвий в addIndex
             if endLast > startFirst{
-                addInMatrix(index: i, length: lenght, groupEvent: &matrixGroup, array: arrayWithEvents, nextInGroup: 1, endLast: endLast)
+                addInMatrix(index: i, length: lenght,  array: arrayWithEvents, nextInGroup: 1, endLast: endLast)
             } else {
-                addInMatrix(index: i, length: lenght, groupEvent: &matrixGroup, array: arrayWithEvents, nextInGroup: 0, endLast: endLast)
+                addInMatrix(index: i, length: lenght, array: arrayWithEvents, nextInGroup: 0, endLast: endLast)
             }
 
             if let endIndex = arrayWithEvents[i][end],
@@ -501,7 +474,7 @@ class CreateGroup: UIViewController {
 
         //если мы ничего не добавили значит в группу дальнейшие события не входят значит рассчитывает событий и удаляем масив с группов событий
         if matrixGroup.isEmpty == false{
-            createFrame(matrixEvent: matrixGroup, arrayWithEvents: &arrayWithEvents, groupElementCount: groupElementsCount)
+            createFrame(arrayWithEvents: &arrayWithEvents, groupElementCount: groupElementsCount)
 
             groupElementsCount.removeAll()
             matrixGroup.removeAll()
@@ -538,3 +511,6 @@ class CreateGroup: UIViewController {
 
 //12 групп 41 накладывающиеся событие 0.07779598236083984б0,0.12298297882080078,0.09410107135772705,0.0629349946975708,0.0466160774230957,0.015125036239624023,0.012606978416442871,0.01573193073272705,0.048364996910095215,0.05236101150512695,0.11309397220611572
 //0.06617150306701661
+
+//почистил код 0.0034199953079223633,0.0009150505065917969,0.0010139942169189453,0.0010269880294799805, 0.0010190010070800781, 0.0010889768600463867,0.0010589361190795898, 0.0010170936584472656,0.0010139942169189453,0.0010559558868408203,0.0009980201721191406,0.0010030269622802734,0.0010019540786743164
+//0.0013027489185333252

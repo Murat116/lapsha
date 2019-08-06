@@ -94,13 +94,23 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ВРЕМЯ" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="yyO-dL-efc">
+                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="50"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aJV-g2-diZ">
                                 <rect key="frame" x="0.0" y="44" width="414" height="818"/>
                             </scrollView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
+                            <constraint firstItem="gKU-Wl-p82" firstAttribute="bottom" secondItem="yyO-dL-efc" secondAttribute="bottom" id="7cs-M9-RtJ"/>
                             <constraint firstItem="gKU-Wl-p82" firstAttribute="trailing" secondItem="aJV-g2-diZ" secondAttribute="trailing" id="Hcq-Lg-huf"/>
+                            <constraint firstItem="yyO-dL-efc" firstAttribute="top" secondItem="gKU-Wl-p82" secondAttribute="top" id="W8T-ue-dQT"/>
+                            <constraint firstItem="gKU-Wl-p82" firstAttribute="trailing" secondItem="yyO-dL-efc" secondAttribute="trailing" id="hD6-M1-bA9"/>
+                            <constraint firstItem="yyO-dL-efc" firstAttribute="leading" secondItem="gKU-Wl-p82" secondAttribute="leading" id="hjB-qU-9RL"/>
                             <constraint firstItem="aJV-g2-diZ" firstAttribute="top" secondItem="gKU-Wl-p82" secondAttribute="top" id="tLB-aR-JUL"/>
                             <constraint firstItem="aJV-g2-diZ" firstAttribute="leading" secondItem="gKU-Wl-p82" secondAttribute="leading" id="udw-cO-MpP"/>
                             <constraint firstItem="gKU-Wl-p82" firstAttribute="bottom" secondItem="aJV-g2-diZ" secondAttribute="bottom" id="uxS-ld-Ekc"/>
@@ -108,12 +118,13 @@
                         <viewLayoutGuide key="safeArea" id="gKU-Wl-p82"/>
                     </view>
                     <connections>
+                        <outlet property="lavel" destination="yyO-dL-efc" id="faR-ux-mrG"/>
                         <outlet property="scroolView" destination="aJV-g2-diZ" id="GCF-hL-1MJ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nDY-Hv-F1d" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1027" y="-37"/>
+            <point key="canvasLocation" x="1026.0869565217392" y="-37.5"/>
         </scene>
     </scenes>
 </document>
