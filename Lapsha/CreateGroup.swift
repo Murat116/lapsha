@@ -273,10 +273,11 @@ class CreateGroup: UIViewController {
                             let endDrop = array[groupEvent[i][addedIndex]]["end"],
                             startDrop < endDrop{
                             groupEvent[i].insert(index, at: addedIndex)
-                            if i != level || level == 0{
+                            print(index,i,"добавлен во втором кейсе второго кейса в матрицу")
+
                                 groupElementsCount[i] = groupElementsCount[i] + 1
                                  print(index,i,level,"index append in new level")
-                            }
+
                         }
                     }
                 }
@@ -364,15 +365,21 @@ class CreateGroup: UIViewController {
 
         print(level,"level")
         let screenWidht = Int(UIScreen.main.bounds.width)
-        let elementCount = groupElementCount[level]
+        var elementCount = groupElementCount[level]
 
         var levelCount =  matrixEvent[level].count - 1
         var stepsCount = 0
-        let startI = levelCount - elementCount
+        var startI = levelCount - elementCount
 
         print(startI + 1,"startI")
 
         let widht: Int
+
+        if arrayWithEvents[matrixEvent[level][startI + 1]]["x"] != nil{
+            elementCount -= 1
+        }
+        startI = levelCount - elementCount
+
 
         if level != 0{
 
