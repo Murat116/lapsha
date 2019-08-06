@@ -40,6 +40,7 @@ class CreateGroup: UIViewController {
             let label = UILabel(frame: CGRect(x: myNewView.frame.size.width / 2, y: myNewView.frame.size.height / 2 , width: 20, height: 20))
 
             label.text = String(i)
+            label.sizeToFit()
 
             myNewView.addSubview(label)
             //add view in scrool
@@ -535,3 +536,5 @@ class CreateGroup: UIViewController {
 //0.0023010969161987305,0.006704092025756836,0.008327007293701172,0.0021790266036987305,0.0030269622802734375,0.002604961395263672
 //0.005028629302978515
 
+//12 групп 41 накладывающиеся событие 0.07779598236083984б0,0.12298297882080078,0.09410107135772705,0.0629349946975708,0.0466160774230957,0.015125036239624023,0.012606978416442871,0.01573193073272705,0.048364996910095215,0.05236101150512695,0.11309397220611572
+//0.06617150306701661

@@ -43,7 +43,7 @@ var array: Array =
         ["start": 660, "end" : 680],
          ["start": 660, "end" : 720],
         ["start": 670, "end" : 690],
-        ["start": 680, "end" : 720], //31
+        ["start": 680, "end" : 721], //31
         ["start" : 720, "end" : 1200], //8 + 500
         ["start" : 1100, "end" : 1200],
         ["start" : 1300, "end" : 1400], //15 + 7000
